@@ -14,7 +14,7 @@ Large-scale code modifications are not desired. Specialized allocators for targe
 
 There are two classes of objects per MPI process. No allocations are distributed among MPI processes for the current implementations and workloads in the production environments.
 
-* _Shared objects_ : they are shared among host threads in a process. The most important objects are bigTables (Bspline coefficients). Once they are constructed, the shared objects are most read-only and infrequently updated only in serial sections. They can be large and managing them on numa nodes is critical for performance.
+* _Shared objects_ : they are shared among host threads in a process. The most important objects are bigTables (Bspline coefficients). Once they are constructed, the shared objects are mostly read-only and infrequently updated in serial sections. They can be large and managing them on nodes with different BWs, e.g., SPR+HBM, is critical for performance.
 
 * _Thread-local objects_ : active objects that are accessed and updated in the main computation are allocated per thread. All the threads can make forward progress indepedently. 
 
