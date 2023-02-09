@@ -4,7 +4,7 @@
 * How to use HBM effectively without PVC?
 * How to generalize the allocation policy on multi-socket and multi-device nodes, super nodes?
 
-Need to avoid large-scale code modifications, e.g., specialized allocators for target objects.
+Need to avoid large-scale code modifications. Specialized allocators for target objects are preferred but more intrusive changes are posisble as far as we can maintain the portability and improve performance.
 
 # Basic structure of QMCPACK: allocations and computations
 
@@ -64,7 +64,7 @@ MPI_Allreduce(measurements);
 MPI_Finalize();
 }
 ```
-# Aurora workload on SPR 6 PVC
+# Aurora workload on a SPR node with 6 PVCs
 
 ## Memory use of Aurora workload using 1 MPI rank per tile, 8 threads per rank
 
