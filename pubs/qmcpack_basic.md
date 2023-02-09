@@ -4,12 +4,11 @@
 * How to use HBM effectively without PVC?
 * How to generalize the allocation policy on multi-socket and multi-device nodes, super nodes?
 
-Need to avoid large-scale code modifications and specialize allocators for target objects.
+Need to avoid large-scale code modifications, e.g., specialized allocators for target objects.
 
 # Basic structure of QMCPACK: allocations and computations
 
-A more realistic implementation is at:
-https://github.com/intel-innersource/applications.hpc.workloads.aurora.miniqmc/blob/main/src/Drivers/miniqmc.cpp
+[miniqmc](https://github.com/intel-innersource/applications.hpc.workloads.aurora.miniqmc/blob/main/src/Drivers/miniqmc.cpp) captures the core elements and is suitable for experiments.
 
 ```
 int main()
