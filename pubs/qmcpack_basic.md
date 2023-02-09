@@ -2,7 +2,7 @@
 
 * How to use HBM effectively with offloads on PVC?
 * How to use HBM effectively without PVC?
-* How to generalize the allocation policy on multi-socket and multi-device nodes, super nodes?
+* How to generalize the allocation policy on super nodes (multi-socket and multi-device nodes) for larger problems demanding more memory?
 
 Need to avoid large-scale code modifications. Specialized allocators for target objects are preferred but more intrusive changes are posisble as far as we can maintain the portability and improve performance.
 
@@ -15,7 +15,8 @@ int main()
 {
  
    MPI_Init();
-
+   
+   //problem size of Aurora workload
    int nel = 6144; // number of electrons
    int nspline = nel/2; // number of splines, >= nel/2
    int ngX = 112, ngY = 66, nyZ = 66;
