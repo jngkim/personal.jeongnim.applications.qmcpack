@@ -81,7 +81,7 @@ How to better use HBM flat/quad mode with minimum changes in QMCPACK?
 In theory, this can be achieved with the combination of numactl and OpenMP allocator in omp_large_cap_mem_space as BsplineAlloc.
 Assuming flat/quad mode, DefaultAlloc will use the local HBM numa-node  2 or 3 depending on the MPI rank if we use 
 
-'''
+```
 mpirun -np 1 numactl -p 2 qmcpack : # rank  0 on socket 0
        -np 1 numactl -p 2 qmcpack : # rank  1 on socket 0
        -np 1 numactl -p 2 qmcpack : # rank  2 on socket 0
@@ -94,7 +94,7 @@ mpirun -np 1 numactl -p 2 qmcpack : # rank  0 on socket 0
        -np 1 numactl -p 3 qmcpack : # rank  9 on socket 1
        -np 1 numactl -p 3 qmcpack : # rank 10 on socket 1
        -np 1 numactl -p 3 qmcpack   # rank 11 on socket 1
-'''
+```
 This requires OpenMP to use memkind library and the user has to provide a proper link to the right memkind build.
 
 ## Option 2: share bigTables among the MPI ranks on the same socket
