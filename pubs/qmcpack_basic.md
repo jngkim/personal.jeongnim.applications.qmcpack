@@ -2,6 +2,7 @@
 
 * How to use HBM effectively with offloads on PVC?
 * How to use HBM effectively without PVC?
+* How to generalize the allocation policy on multi-socket and multi-device nodes, super nodes?
 
 # Basic structure of QMCPACK: allocations and computations
 ```
