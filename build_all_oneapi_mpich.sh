@@ -4,15 +4,22 @@ topdir=`pwd`
 INSTALL_DIR=$topdir/share
 BOOST_DIR=$topdir/external
 qmcpack_home=qmcpack.intel
-
 mtag=`date "+%Y%m%d.%H%M"`
+
+if [ "$#" -eq 0 ]; then
+  targets=("libxml2 hdf5")
+else
+  targets=( "$@" )
+fi
+
+export MPICH_CXX=icpx
 
 if [ ! -d "$qmcpack_home" ] ; then
   git clone -b aurora-main https://github.com/intel-innersource/applications.hpc.workloads.aurora.qmcpack.git qmcpack.intel
 fi
 
 if [ ! -d "external/hdf5" ] ; then
-  git clone -b hdf5-1_14_0 https://github.com/HDFGroup/hdf5.git external/hdf5
+  git clone -b hdf5-1_10_9 https://github.com/HDFGroup/hdf5.git external/hdf5
 fi
 
 if [ ! -d "external/libxml2" ] ; then
@@ -20,7 +27,6 @@ if [ ! -d "external/libxml2" ] ; then
 fi
 
 build_hdf5() {
-
   CC=icx cmake -S external/hdf5 \
     -B build/hdf5 \
     -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} \
@@ -59,6 +65,8 @@ build_libxml2() {
 
   cmake --build build/libxml2 --parallel
   cmake --build build/libxml2 --target install
+
+  cmake_libxml2="-DLibXml2_ROOT=${INSTALL_DIR}"
 }
 
 build_qmcpack_cpu() {
@@ -71,8 +79,7 @@ build_qmcpack_cpu() {
     -B ${build_dir} \
     -DCMAKE_CXX_FLAGS="-cxx=icpx -mprefer-vector-width=512 -march=sapphirerapids " \
     -DCMAKE_C_FLAGS="-mprefer-vector-width=512 -march=sapphirerapids " \
-    -DHDF5_ROOT=${INSTALL_DIR} \
-    -DLibXml2_ROOT=${INSTALL_DIR} \
+    -DHDF5_ROOT=${INSTALL_DIR} ${cmake_libxml2} \
     -DBoost_INCLUDE_DIR=${BOOST_DIR} \
     -DQMC_MIXED_PRECISION=ON 2>&1 | tee ${log_file}
 
@@ -86,13 +93,12 @@ build_qmcpack_gpu() {
   src_dir=${qmcpack_home}/qmcpack.src
   build_dir=build_gpu
 
-  CXX=mpicxx CC=icx cmake \
+  CXX=mpicxx CC=mpicc cmake \
     -S ${src_dir} \
     -B ${build_dir} \
-    -DCMAKE_CXX_FLAGS="-cxx=icpx -mprefer-vector-width=512 -march=sapphirerapids " \
+    -DCMAKE_CXX_FLAGS="-mprefer-vector-width=512 -march=sapphirerapids " \
     -DCMAKE_C_FLAGS="-mprefer-vector-width=512 -march=sapphirerapids " \
-    -DHDF5_ROOT=${INSTALL_DIR} \
-    -DLibXml2_ROOT=${INSTALL_DIR} \
+    -DHDF5_ROOT=${INSTALL_DIR} ${cmake_libxml2} \
     -DBoost_INCLUDE_DIR=${BOOST_DIR} \
     -DENABLE_OFFLOAD=ON -DOFFLOAD_TARGET=spir64 -DENABLE_SYCL=ON \
     -DQMC_MIXED_PRECISION=ON 2>&1 | tee ${log_file}
@@ -101,6 +107,7 @@ build_qmcpack_gpu() {
 
 }
 
-build_hdf5 
-build_libxml2
+for a in $targets; do
+  build_${a}
+done
 build_qmcpack_gpu
