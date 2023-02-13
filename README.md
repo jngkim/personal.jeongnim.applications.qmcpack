@@ -2,7 +2,7 @@
 
 ## Build using MPICH on a bare-metal system
 
-cmake must be available.
+cmake (3.22.x higher) must be available.
 
 $[./build_all_oneapi_mpich.sh](build_all_oneapi_mpich.sh)
 
