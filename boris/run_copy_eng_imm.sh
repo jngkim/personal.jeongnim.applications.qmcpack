@@ -46,6 +46,9 @@ cp ${input} ${run_dir}/
 #export EventWaitOnHost=1
 #export PrintDebugSettings=1
 
+#export NEOReadDebugKeys=1
+#export SplitBcsCopy=0
+
 export KMP_BLOCKTIME=0
 export OMP_PLACES=cores
 export OMP_PROC_BIND=spread
@@ -61,15 +64,15 @@ export LIBOMP_NUM_HIDDEN_HELPER_THREADS=0
 export ZEX_NUMBER_OF_CCS=0:1,1:1,2:1,3:1,4:1,5:1
 
 export LIBOMPTARGET_LEVEL0_COMPILATION_OPTIONS="-ze-opt-large-register-file"
-export LIBOMPTARGET_LEVEL_ZERO_USE_IMMEDIATE_COMMAND_LIST=1
+export SYCL_PROGRAM_COMPILE_OPTIONS="-ze-opt-large-register-file"
+
+export LIBOMPTARGET_LEVEL_ZERO_USE_IMMEDIATE_COMMAND_LIST=all
 export LIBOMPTARGET_LEVEL_ZERO_INTEROP_USE_IMMEDIATE_COMMAND_LIST=1
 export LIBOMPTARGET_LEVEL0_USE_COPY_ENGINE=main
 
 export SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS=1
 export SYCL_PI_LEVEL_ZERO_DEVICE_SCOPE_EVENTS=0
-####################
-#export SYCL_PI_LEVEL_ZERO_USE_COPY_ENGINE=0:0
-####################
+export SYCL_PI_LEVEL_ZERO_USE_COPY_ENGINE=0:0
 
 function print_env()
 {
