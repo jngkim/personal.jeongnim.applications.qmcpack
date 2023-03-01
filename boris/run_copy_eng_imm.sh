@@ -5,41 +5,7 @@ omp=${2:-8}
 app=${3}
 input=${4}
 
-if [[ -z ${GPU_AFFINITY} ]]; then
-  GPU_AFFINITY=/home/jeongnim/qmcpack.workspace/gpu_mapper.sh
-  echo "Using default mapper "$GPU_AFFINITY
-fi
-
-# MPI_BIND_OPTIONS are not set, use Aurora nodes, 6 GPU configurations
-if [[ -z ${MPI_BIND_OPTIONS} ]]; then
-  MPI_BIND_OPTIONS="-bind-to user:2-9+106-113,10-17+114-121,18-25+122-129,26-33+130-137,34-41+138-145,42-49+146-153,54-61+158-165,62-69+166-173,70-77+174-181,78-85+182-189,86-93+190-197,94-101+198-205"
-fi
-
-if [[ -z ${app} ]]; then
-  app=`pwd`/build/bin/qmcpack
-  echo "Using default binary: ${app}"
-fi
-
-if [[ -z ${input} ]]; then
-  input=NiO-fcc-S128-dmc.xml
-fi
-
-#mtag=`date "+%Y%m%d.%H%M"`
-mtag=`date "+%Y%m%d"`
-if [[ -z ${SLURM_JOB_NAME} ]]; then
-  log_root=${mtag}.p${ppn}x${omp}
-else
-  log_root="${mtag}.${SLURM_JOB_NAME}.n${SLURM_NNODES}.p${ppn}x${omp}.${SLURM_JOBID}"
-fi
-
-if [[ -z ${SLURM_NODELIST} ]]; then
-  SLURM_NODELIST=c001n0001
-fi
-
 # run directory
-run_dir=${log_root}
-mkdir -p ${run_dir}
-cp ${input} ${run_dir}/
 
 #export DirectSubmissionRelaxedOrdering=1
 #export NEOReadDebugKeys=1
@@ -86,29 +52,18 @@ function print_env()
 
   echo 'MKLROOT='${MKLROOT}
   echo 'Binary='${app}
-  echo
-  env | grep SLURM
-  echo
-  env | grep LIBOMP
-  echo
-  env | grep SYCL
-  echo
+  env
   ldd ${app}
   echo
 }
 
-print_env ${app} 2>&1 | tee -a ${run_dir}/env.out
+print_env ${app} 2>&1 | tee -a env.out
 
-cd ${run_dir}
+nnodes=${ppn}
+export OMP_NUM_THREADS=${omp} 
+echo "mpiexec ${MPI_BIND_OPTIONS} -n ${nnodes} -ppn ${ppn} ${GPU_AFFINITY}  ${app}  ${input} --enable-timers=fine"
+mpiexec ${MPI_BIND_OPTIONS} -n ${nnodes} -ppn ${ppn} ${GPU_AFFINITY}  ${app}  ${input} --enable-timers=fine  2>&1 | tee -a qmcpack.out
 
-echo "mpirun  -genv OMP_NUM_THREADS=${omp} ${MPI_BIND_OPTIONS} -ppn ${ppn} \
-  ${GPU_AFFINITY}  ${app}  ${input} --enable-timers=fine " 2>&1 | tee -a env.out
-
-mpirun  -genv OMP_NUM_THREADS=${omp} ${MPI_BIND_OPTIONS} -ppn ${ppn} \
-  ${GPU_AFFINITY}  ${app}  ${input} --enable-timers=fine  2>&1 | tee -a qmcpack.out
-
-#mpirun  -genv OMP_NUM_THREADS=${omp} ${MPI_BIND_OPTIONS} -ppn ${ppn} \
-#  ${GPU_AFFINITY}  ${app} 2>&1 | tee -a qmcpack.out
 
 function print_summary()
 {
