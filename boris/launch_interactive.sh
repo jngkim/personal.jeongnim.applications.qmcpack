@@ -1,4 +1,10 @@
 #!/bin/bash
+
+# Usage : ./launch_interactive.sh [special-name] [ppn] [omp]
+jtag=${1:-aurora}
+ppn=${2:-12}
+omp=${3:-8}
+
 BIND8_S0_OPTIONS="-bind-to user:2-9+106-113,10-17+114-121,18-25+122-129,26-33+130-137,34-41+138-145,42-49+146-153"
 BIND8_S2_OPTIONS="-bind-to user:2-9+106-113,10-17+114-121,18-25+122-129,26-33+130-137,34-41+138-145,42-49+146-153,54-61+158-165,62-69+166-173,70-77+174-181,78-85+182-189,86-93+190-197,94-101+198-205"
 
@@ -28,26 +34,31 @@ unset RebuildPrecompiledKernels
 unset ForceLargeGrfCompilationMode
 unset DirectSubmissionControllerTimeout
 
-export A21_JOBNAME="${mtag}.${HOST}.neo-025375.c0227"
-
+export A21_JOBNAME="${mtag}.${HOST}.${jtag}"
 
 RUN_SCRIPT=run_copy_eng_imm.sh
 
-#export LIBOMPTARGET_DEBUG=5
 
-ppn=${1:-12}
-omp=${2:-8}
+have_h5=0
+if [[ -f "einspline.tile_2-2626-22-2-2.spin_0.tw_0.l0u3072.g112x66x66.h5" ]]; then
+  have_h5=1
+fi
 
 run_dir=${A21_JOBNAME}.p${ppn}x${omp}
 mkdir -p ${run_dir}
 cp ${input} ${run_dir}/
 
 cd ${run_dir}
-#ln -s ../einspline.tile_2-2626-22-2-2.spin_0.tw_0.l0u3072.g112x66x66.h5 .
-#ln -s ../einspline.tile_2-2626-22-2-2.spin_1.tw_0.l0u3072.g112x66x66.h5 .
 
+if [[ "$have_h5" -eq 1 ]]; then
+  ln -s ../einspline.tile_2-2626-22-2-2.spin_0.tw_0.l0u3072.g112x66x66.h5 .
+  ln -s ../einspline.tile_2-2626-22-2-2.spin_1.tw_0.l0u3072.g112x66x66.h5 .
+fi
 
 ../${RUN_SCRIPT} ${ppn} ${omp} ${qmcpack} ${input}
-#rm  -rf *.h5
+
+if [[ "$have_h5" -eq 1 ]]; then
+  rm  -rf *.h5
+fi
 #
 cd -
