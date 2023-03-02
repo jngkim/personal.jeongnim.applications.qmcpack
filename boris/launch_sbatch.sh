@@ -19,7 +19,7 @@ export GPU_AFFINITY=`pwd`/gpu_mapper.sh
 export MPI_BIND_OPTIONS=${BIND8_S2_OPTIONS}
 
 mtag=`date "+%Y%m%d.%H%M"`
-export A21_JOBNAME="${mtag}.${jtag}.${HOST}"
+export A21_JOBNAME="${mtag}.${jtag}"
 export SBATCH_RESERVATION=Performance_Tuning
 RUN_SCRIPT=`pwd`/run_aurora_w.sh
 
@@ -40,28 +40,12 @@ unset ForceLargeGrfCompilationMode
 unset DirectSubmissionControllerTimeout
 
 ###################
-have_h5=0
-if [[ -f "einspline.tile_2-2626-22-2-2.spin_0.tw_0.l0u3072.g112x66x66.h5" ]]; then
-  have_h5=1
-fi
-
 run_dir=${A21_JOBNAME}.n${nnodes}.p${ppn}x${omp}
 mkdir -p ${run_dir}
 cp ${input} ${run_dir}/
 
 cd ${run_dir}
 
-if [[ "$have_h5" -eq 1 ]]; then
-  ln -s ../einspline.tile_2-2626-22-2-2.spin_0.tw_0.l0u3072.g112x66x66.h5 .
-  ln -s ../einspline.tile_2-2626-22-2-2.spin_1.tw_0.l0u3072.g112x66x66.h5 .
-fi
-
-${RUN_SCRIPT} ${ppn} ${omp} ${qmcpack} ${input}
-
-if [[ "$have_h5" -eq 0 ]]; then
-  mv einspline*.h5 ../
-fi
-
-rm  -rf *.h5
+sbatch --job-name=${jtag} --time=00:12:00 $NODECOND ${RUN_SCRIPT} 12 8 ${qmcpack} ${input}
 
 cd -
