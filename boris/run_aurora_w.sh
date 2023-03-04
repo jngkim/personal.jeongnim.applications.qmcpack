@@ -18,7 +18,7 @@ input=${4}
 export KMP_BLOCKTIME=0
 export OMP_PLACES=cores
 export OMP_PROC_BIND=spread
-export HYDRA_TOPO_DEBUG=1
+export MPIR_CVAR_ENABLE_GPU=0
 
 export LIBOMPTARGET_PLUGIN=LEVEL0
 export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
@@ -57,11 +57,11 @@ function print_env()
   echo
 }
 
-nnodes=${SLURM_JOB_NUM_NODES:-1}
-
-if [[ "$nnodes" -eq 1 ]]; then
-  unset HYDRA_TOPO_DEBUG
-fi
+#nnodes=${SLURM_JOB_NUM_NODES:-1}
+#
+#if [[ "$nnodes" -eq 1 ]]; then
+#  unset HYDRA_TOPO_DEBUG
+#fi
 
 print_env ${app} 2>&1 | tee -a env.out
 
