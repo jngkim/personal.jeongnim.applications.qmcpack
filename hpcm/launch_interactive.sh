@@ -39,7 +39,6 @@ export A21_JOBNAME="${mtag}.${HOST}.${jtag}"
 
 RUN_SCRIPT=run_copy_eng_imm.sh
 
-
 have_h5=0
 if [[ -f "einspline.tile_2-2626-22-2-2.spin_0.tw_0.l0u3072.g112x66x66.h5" ]]; then
   have_h5=1
@@ -58,8 +57,10 @@ fi
 
 ../${RUN_SCRIPT} ${ppn} ${omp} ${qmcpack} ${input}
 
-if [[ "$have_h5" -eq 1 ]]; then
-  rm  -rf *.h5
+if [[ "$have_h5" -eq 0 ]]; then
+  mv einspline*.h5 ../
 fi
+
+rm  -rf *.h5
 #
 cd -
