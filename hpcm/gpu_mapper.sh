@@ -13,7 +13,7 @@ MY_TILE_LOCAL=$(( LOCAL_RANK_ID % TILE_PER_GPU ))
 
 export ZE_AFFINITY_MASK=${MY_GPU}.${MY_TILE_LOCAL}
 
-echo 'ZE_AFFINITY_MASK on '`hostname`' for local rank '${LOCAL_RANK_ID}' is '${ZE_AFFINITY_MASK}
+#echo 'ZE_AFFINITY_MASK on '`hostname`' for local rank '${LOCAL_RANK_ID}' is '${ZE_AFFINITY_MASK}
 
 # Invoke the main program
 $*
