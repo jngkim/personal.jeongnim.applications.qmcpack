@@ -5,7 +5,7 @@
 ### Set modules and paths
 
 As 2023-05-05,
-
+```
   module use -a /home/nsdhaman/shared/modulefiles
   module use -a /home/ftartagl/graphics-compute-runtime/modulefiles
   module use -a /home/ftartagl/nightly
@@ -14,7 +14,7 @@ As 2023-05-05,
   module load nightly-compiler/2023.04.10
   module load nightly-mkl/2023.03.29
   module load graphics-compute-runtime/ci-neo-master-026097 
-
+```
 Do not use cmpilers later than 2023.04.10 until notified.
 
 ### Build and run Aurora workload
