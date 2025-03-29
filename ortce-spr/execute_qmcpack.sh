@@ -32,10 +32,11 @@ export SYCL_PROGRAM_COMPILE_OPTIONS="-ze-opt-large-register-file"
 export LIBOMPTARGET_LEVEL_ZERO_COMMAND_MODE=sync
 export ZE_FLAT_DEVICE_HIERARCHY=FLAT
 
-nnodes=${ppn}
 export OMP_NUM_THREADS=${omp} 
-echo "mpirun ${MPI_BIND_OPTIONS} -np ${ppn} ${GPU_AFFINITY}  ${qmcpack}  ${input} --enable-timers=fine"
-mpirun ${MPI_BIND_OPTIONS} -np ${ppn} ${GPU_AFFINITY}  ${qmcpack}  ${input} --enable-timers=fine  2>&1 | tee -a qmcpack.out
+#echo "mpirun ${MPI_BIND_OPTIONS} -np ${ppn} ${GPU_AFFINITY}  ${qmcpack}  ${input} --enable-timers=fine"
+#mpirun ${MPI_BIND_OPTIONS} -np ${mpi} ${GPU_AFFINITY}  ${qmcpack}  ${input} --enable-timers=fine  2>&1 | tee -a qmcpack.out
+
+mpirun -np ${mpi} ${qmcpack}  ${input} --enable-timers=fine  2>&1 | tee -a qmcpack.out
 
 grep Execution qmcpack.out
 grep "reference energy" qmcpack.out
